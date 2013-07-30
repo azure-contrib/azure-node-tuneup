@@ -29,6 +29,15 @@ npm install tuneup -g
 
 Note: For npm future deployments will be much faster if you specify a specific version rather than using a semver i.e. "1.8.x". 
 
+# Usage
+```
+Usage: tuneup
+
+Options:
+  -n, --node  Set your node version  [default: "0.10.15"]
+  -p, --npm   Set your npm version   [default: "1.3.5"]
+```
+
 # Version selection
 Several options are available for specifying your selected node and npm version. 
 
