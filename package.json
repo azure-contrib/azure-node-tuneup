@@ -1,0 +1,16 @@
+{
+  "name": "tuneup",
+  "version": "0.0.1",
+  "description": "Give your Azure Website a tune up to run any node or npm version",
+  "main": "index.js",
+  "author": "Glenn Block <glenn.block@gmail.com>",
+  "license": "Apache 2",
+  "bin": {
+    "tuneup": "./bin/tuneup"
+  },
+  "dependencies": {
+    "optimist": "~0.5.0",
+    "prompt": "~0.2.9",
+    "fs.extra": "~1.2.1"
+  }
+}

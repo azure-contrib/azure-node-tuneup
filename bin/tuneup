@@ -1,0 +1,106 @@
+#!/usr/bin/env node
+
+var fs = require('fs'),
+  path = require('path'),
+  optimist = require('optimist'),
+  prompt = require('prompt'),
+  copyRecursive = require('fs.extra').copyRecursive;
+
+
+var argv = optimist.usage('\nGive your Azure website a node and npm tune up.\n\nUsage: $0')
+  .alias('n', 'node')
+  .default('n', '0.10.15')
+  .describe('n', 'Set your node version')
+  .default('p', '1.3.5')
+  .alias('p', 'npm')
+  .describe('p', 'Set your npm version')
+  .argv;
+
+if (argv.help != null || argv.h != null) { 
+  optimist.showHelp();
+  process.exit();
+}
+
+var sitePath = process.cwd();
+var templatePath = path.resolve(__dirname, '..', 'template');
+checkDeploymentFile();
+updateOrCreatePackageJson(sitePath);
+
+
+function updateOrCreatePackageJson() {
+	var packageJsonPath = path.join(sitePath, 'package.json');
+	var packageJson;
+
+	try {
+		fs.statSync(packageJsonPath);
+		var packageJsonFile = rs.readFileSync(packageJsonPath, 'utf8');
+		packageJson = JSON.parse(packageJsonFile);
+	}
+	catch(err) {
+		packageJson = {
+			"version": "0.1.0",
+			"engines": {}
+		};
+	}
+	packageJson.engines.node = argv.n;
+	packageJson.engines.npm = argv.p;
+	fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+}
+
+function checkDeploymentFile() {
+	checkFile(
+		path.join('./', '.deployment'),
+		'.deployment file exists and will be overwritten, continue?',
+		checkDeploySh
+	);
+}
+
+function checkDeploySh() {
+	checkFile(
+		path.join('./', 'deploy.sh'),
+		'deploy.sh file exists and will be overritten, continue?',
+		copyFiles
+	);
+}
+
+function copyFiles() {
+	copyRecursive(templatePath, sitePath, function() {
+		console.log('done');
+		return;
+	});
+}
+
+function checkFile(file, prompt, callback) {
+	try {
+		fs.statSync(file);
+		promptYesNo(prompt,function(yesno) {
+			if(yesno === 'n' || yesno === '') {
+				process.exit();
+			}
+			callback();
+		});
+	}
+	catch(err) {
+		callback();
+	}
+
+}
+
+function promptYesNo(message , callback) {
+	process.stdout.write(message + " (n) ");
+	process.stdin.resume();
+
+	process.stdin.setEncoding('utf8');
+
+	process.stdin.on('data', function(chunk) {
+	  var chunkLower = chunk.toLowerCase().substring(0, chunk.length-1);
+	  if(chunkLower !='' && chunkLower != 'y' && chunkLower != 'n') {
+	  	console.log('Answer must be y or n');
+	  }
+	  else {
+	  	process.stdin.pause();
+	  	callback(chunkLower);
+	  	return;
+	  }
+	});
+}
