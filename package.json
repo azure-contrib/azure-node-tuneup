@@ -1,6 +1,6 @@
 {
   "name": "tuneup",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Give your Azure Website a tune up to run any node or npm version",
   "main": "index.js",
   "author": "Glenn Block <glenn.block@gmail.com>",
